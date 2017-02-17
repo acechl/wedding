@@ -12,9 +12,16 @@ $(function(){
         this.host();
         //    绑定事件
         this.bind();
+        this.change();
     }
     home_page.prototype = {
         constructor:home_page,
+        change: function(){
+           var self = this;
+            $(window).on('resize',function(){
+              self.get_width();
+          })
+        },
         host:function(){
 //首页 主人家的渲染
             this.get_data(this.num,0,this.host_id,this.host_url,this.host_container);
@@ -29,9 +36,8 @@ $(function(){
             this.get_data(this.num,0,this.square_id,this.square_url,this.square_container);
     //portfolio下部分页面的数据加载
             this.get_data(this.num,0,this.square_id,this.round_url,this.round_container);
-            var divs = $(".wedding>div");
+            var divs = $(".wedding>.pages");
             divs.css("display","none");
-            divs.eq(0).css("display","block");
         },
 //封装数据请求
         /**
@@ -83,7 +89,7 @@ $(function(){
                     var li = $(".function li");
                     var liWidth = li.width();
                     li.height(liWidth);
-                },50)
+                },100)
         },
         bind:function(){
             //bind函数中的this指的是构造函数的实例
@@ -179,18 +185,23 @@ $(function(){
             })
     //设置wedding过渡完后 页面的顶部从上到下滑动
             var goHome =$(".go-page-home");
-            var weddingWidth = wedding.css("transform");
-            self.openTransitionEnd(wedding,function(){
+            // var weddingWidth = wedding.css("transform");
+            self.openTransitionEnd(wedding,function(){ //回到首页
                 if(wedding.css("transform")== "matrix(1, 0, 0, 1, 0, 0)") {
+                    console.log('去首页');
                     self.closeTransition(wedding);
                     self.openTransformY(goHome,-58);
-                }else {
+                    $('.home-page').css('display','block');
+                    divs.css('display','none');
+                    divs.eq(0).css("display","block");
+                }else {//去其他页
+                    console.log("去其他页");
                     self.openTransition(goHome);
                     self.openTransformY(goHome,0);
+                    divs.css('display','none');
+                    divs.eq(pageIndex).css("display","block");
+                    $('.home-page').css('display','block');
                 }
-                divs.css("display","none");
-                divs.eq(pageIndex).css("display","block");
-                divs.eq(0).css("display","block");
             })
  //点击返回主页按钮 返回主页
             var goPageHome = $(".go-page-home span:first-child");
@@ -198,7 +209,9 @@ $(function(){
                 goHome.css("webkitTransform", "translateY(-58px)");
                     self.openTransition(wedding);
                     self.openTransform(wedding,0);
-                    $(".home-page").css("display","block").siblings().css("display","none");
+                $(".home-page").css("display","block");
+                divs.css('display','block');
+
             })
         },
     //    点击某个对象 如果是显示就隐藏  如果是隐藏就显示
